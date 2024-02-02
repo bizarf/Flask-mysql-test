@@ -8,12 +8,21 @@ import os
 load_dotenv
 
 # attempts to make a connection to the mysql server
-try:
-    with connect(
+# try:
+#     with connect(
+#         host=os.getenv("MYSQL_HOST"),
+#         user=os.getenv("MYSQL_USER"),
+#         password=os.getenv("MYSQL_PASSWORD"),
+#         database=os.getenv("MYSQL_DATABASE")
+#     ) as connection:
+#         print(connection)
+# except Error as e:
+#     print(e)
+
+def get_mysql_connection():
+    return connect(
         host=os.getenv("MYSQL_HOST"),
         user=os.getenv("MYSQL_USER"),
-        password=os.getenv("MYSQL_PASSWORD")
-    ) as connection:
-        print(connection)
-except Error as e:
-    print(e)
+        password=os.getenv("MYSQL_PASSWORD"),
+        database=os.getenv("MYSQL_DATABASE")
+    )
