@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>{{tableName.title()}}</h1>
+        <button>Add data</button>
+        <table>
+            <tr>
+                {% for tableHead in tableDef %}
+                <th>{{tableHead[0]}}</th>
+                {% endfor %}
+            </tr>
+            {% for row in table %}
+            <tr>
+                {% for cell in row %}
+                <td>{{cell}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+            <tr></tr>
+        </table>
+    </body>
+</html>
