@@ -22,7 +22,7 @@ Now to install the project dependencies type:
 pip install -r requirements.txt
 ```
 
-Now create a file called ".env" and inside it add:
+Now create a file called ".env" at the root of the project and inside the file add:
 
 ```
 MYSQL_HOST="(your MySQL hostname)"
