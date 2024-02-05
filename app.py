@@ -39,11 +39,10 @@ def createCarTable():
 @app.route("/show-tables")
 def showTables():
     try:
-        tableList = []
         show_tableList_query = "SHOW TABLES;"
         cursor.execute(show_tableList_query)
-        for db in cursor:
-            tableList.append(db)
+        tableList = cursor.fetchall()
+        
         return render_template("tableList.html", tableList=tableList)
     except Error as e:
         print(f"An error occurred: {e}")
@@ -52,23 +51,32 @@ def showTables():
 @app.route("/show-tables/table/<tableName>")
 def showTableData(tableName):
     try:
-        table = []
-        tableDef = []
         show_table_query = f"SELECT * FROM {tableName};"
         describe_table_query = f"DESCRIBE {tableName};"
         cursor.execute(show_table_query)
-        rows = cursor.fetchall()
-        for row in rows:
-            table.append(row)
+        tableRows = cursor.fetchall()
         
         cursor.execute(describe_table_query)
-        for db in cursor:
-            tableDef.append(db)
-                   
-        return render_template("table.html", table=table, tableName=tableName, tableDef=tableDef)
+        tableDef = cursor.fetchall()
+
+        return render_template("table.html", tableRows=tableRows, tableName=tableName, tableDef=tableDef)
     except Error as e:
         print(f"An error occurred: {e}")
-    return "beep beep"
+
+@app.route("/show-tables/table/<tableName>/add")
+def addData(tableName):
+    try:
+        show_table_query = f"SELECT * FROM {tableName};"
+        describe_table_query = f"DESCRIBE {tableName};"
+        cursor.execute(show_table_query)
+        tableRows = cursor.fetchall()
+        
+        cursor.execute(describe_table_query)
+        tableDef = cursor.fetchall()
+
+        return render_template("table.html", tableRows=tableRows, tableName=tableName, tableDef=tableDef)
+    except Error as e:
+        print(f"An error occurred: {e}")
 
 # @app.route("/show-all-records")
 # def show():
