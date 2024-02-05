@@ -5,5 +5,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
     </head>
-    <body></body>
+    <body>
+        <h1>Insert data to {{tableName.title()}}</h1>
+        <form method="POST">
+            {% for column in tableColumns %} {% if column[0] != "id" %}
+            <label>{{column[0]}} : {{column[1]}}</label>
+            <input type="text" name="{{column[0]}}" id="{{column[0]}}" />
+            <br />
+            {% endif %} {% endfor %}
+            <input type="submit" value="Submit" />
+        </form>
+    </body>
 </html>

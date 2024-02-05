@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, redirect, url_for
 from flask import render_template
 from mysqlConnection import get_mysql_connection
 from mysql.connector import Error
@@ -13,10 +13,27 @@ try:
 except Error as e:
     print("Error connecting to database:", e)
 
+
+# fetch all rows in a table
+def fetchTableRows(tableName):
+    show_table_query = f"SELECT * FROM {tableName};"
+    cursor.execute(show_table_query)
+    tableRows = cursor.fetchall()
+    return tableRows
+
+
+# fetch all columns in a table
+def fetchTableColumns(tableName):
+    describe_table_query = f"DESCRIBE {tableName};"
+    cursor.execute(describe_table_query)
+    tableColumns = cursor.fetchall()
+    return tableColumns
+
+
 # index route
 @app.route("/")
 def index():
-    return "<p>Index</p>"
+    return render_template("index.html")
 
 
 # create a table
@@ -35,6 +52,7 @@ def createCarTable():
         connection.commit()
     return "Car table created"
 
+
 # show all tables in the database. don't use commit, because we're not committing anything to the database
 @app.route("/show-tables")
 def showTables():
@@ -47,37 +65,34 @@ def showTables():
     except Error as e:
         print(f"An error occurred: {e}")
 
+
 # dynamically load a table and render it's contents
 @app.route("/show-tables/table/<tableName>")
 def showTableData(tableName):
     try:
-        show_table_query = f"SELECT * FROM {tableName};"
-        describe_table_query = f"DESCRIBE {tableName};"
-        cursor.execute(show_table_query)
-        tableRows = cursor.fetchall()
-        
-        cursor.execute(describe_table_query)
-        tableDef = cursor.fetchall()
+        tableRows = fetchTableRows(tableName)
+        tableColumns = fetchTableColumns(tableName)
 
-        return render_template("table.html", tableRows=tableRows, tableName=tableName, tableDef=tableDef)
+        return render_template("table.html", tableRows=tableRows, tableName=tableName, tableColumns=tableColumns)
     except Error as e:
         print(f"An error occurred: {e}")
 
-@app.route("/show-tables/table/<tableName>/add")
+
+@app.route("/show-tables/table/<tableName>/add", methods=["GET", "POST"])
 def addData(tableName):
-    try:
-        show_table_query = f"SELECT * FROM {tableName};"
-        describe_table_query = f"DESCRIBE {tableName};"
-        cursor.execute(show_table_query)
-        tableRows = cursor.fetchall()
-        
-        cursor.execute(describe_table_query)
-        tableDef = cursor.fetchall()
-
-        return render_template("table.html", tableRows=tableRows, tableName=tableName, tableDef=tableDef)
-    except Error as e:
-        print(f"An error occurred: {e}")
-
-# @app.route("/show-all-records")
-# def show():
-#     return 
+    if request.method == "POST":
+        try:
+            columns = ", ".join(request.form.keys())
+            row = ", ".join(request.form.values())
+            insert_row_query = f"INSERT INTO {tableName}({columns}) VALUES ({row})"
+            cursor.execute(insert_row_query)
+            connection.commit()
+            return redirect(url_for("showTableData", tableName=tableName))
+        except Error as e:
+            print(f"An error occurred: {e}")
+    else:
+        try:
+            tableColumns = fetchTableColumns(tableName)
+            return render_template("insertDataForm.html", tableName=tableName, tableColumns=tableColumns)
+        except Error as e:
+            print(f"An error occurred: {e}")

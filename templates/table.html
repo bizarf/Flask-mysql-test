@@ -7,10 +7,10 @@
     </head>
     <body>
         <h1>{{tableName.title()}}</h1>
-        <button>Add data</button>
+        <a href="./{{tableName}}/add">Add data</a>
         <table>
             <tr>
-                {% for tableHead in tableDef %}
+                {% for tableHead in tableColumns %}
                 <th>{{tableHead[0]}}</th>
                 {% endfor %}
             </tr>
